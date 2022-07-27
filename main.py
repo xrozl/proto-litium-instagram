@@ -11,20 +11,23 @@ def setProfile(name: str, options):
     return options
 
 options = webdriver.ChromeOptions()
-
-# env settings
+# headless
+options.add_argument("--headless")
 driver = webdriver.Chrome(ChromeDriverManager().install(), options=setProfile("env1", options))
 
 # open instagram
 driver.get("https://www.instagram.com/")
 
+# get sent users
 sendUsers = []
 if os.path.exists("users.txt"):
     with open("users.txt", "r") as f:
         sendUsers = f.read().splitlines()
         print("load users from file")
-        print("count: " + str(len(sendUsers)))
+        print("loaded count: " + str(len(sendUsers)))
 
+# igt_3233
+# password3233
 driver.implicitly_wait(5)
 # wait login
 while True:
@@ -32,21 +35,27 @@ while True:
         break
     sleep(1)
 
-# search bar
+# tag input
 tagname = "cats"
 
 count = 0
 while True:
+    # search tag
     driver.get("https://www.instagram.com/explore/tags/" + tagname + "/")
     driver.implicitly_wait(10)
     sleep(5)
+
+    # get posts
     posts = driver.find_elements(By.CLASS_NAME, "_aagw")
+    print("posts count: " + str(len(posts)))
+    # post click
     posts[count].click()
     sleep(5)
     print("clicked")
     atags = driver.find_elements(By.TAG_NAME, "a")
     name = ""
     for atag in atags:
+        # get name
         clazz = "oajrlxb2 g5ia77u1 qu0x051f esr5mh6w e9989ue4 r7d6kgcz rq0escxv nhd2j8a9 nc684nl6 p7hjln8o kvgmc6g5 cxmmr5t8 oygrvhab hcukyx3x jb3vyjys rz4wbd8a qt6c0cv9 a8nywdso i1ao9s8h esuyzwwr f1sip0of lzcic4wl _acan _acao _acat _acaw _a6hd"
         if atag.get_attribute("class") == clazz:
             name = atag.text
@@ -83,11 +92,14 @@ while True:
             break
 
     sleep(5)
+    # get message target circles
     circles = driver.find_elements(By.TAG_NAME, "circle")
     for circle in circles:
+        # get first circle
         cx = "12.008"
         r = "11.25"
         if circle.get_attribute("cx") == cx and circle.get_attribute("r") == r:
+            # click circle to send message
             circle.click()
             break
 
@@ -95,6 +107,7 @@ while True:
 
     divs = driver.find_elements(By.TAG_NAME, "div")
     for div in divs:
+        # next button
         clazz = "_aagz"
         text = "次へ"
         if div.get_attribute("class") == clazz and div.text == text:
@@ -103,8 +116,10 @@ while True:
 
     textareas = driver.find_elements(By.TAG_NAME, "textarea")
     for textarea in textareas:
+        # get message input
         placeholder = "メッセージ..."
         if textarea.get_attribute("placeholder") == placeholder:
+            # send message
             textarea.send_keys(msg)
             textarea.send_keys(Keys.ENTER)
             break
